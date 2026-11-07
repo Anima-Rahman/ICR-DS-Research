@@ -1,0 +1,12 @@
+
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+type: software
+
+title: "ICR-DS Research Software"
+
+authors:
+  - family-names: Rahman
+    given-names: Anima
+    email: anima.rahman.1@warwick.ac.uk
+    affiliation: University of Warwick

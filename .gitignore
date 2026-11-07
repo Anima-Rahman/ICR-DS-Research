@@ -1,0 +1,31 @@
+# Dataset files
+*.h5
+*.hdf5
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+# Training outputs
+results/
+runs/
+logs/
+feature_cache/
+
+# Python temporary files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter and system files
+.ipynb_checkpoints/
+.DS_Store
+Thumbs.db
+
+# PyCharm
+.idea/
