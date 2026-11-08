@@ -17,16 +17,16 @@ Destination:
     ICR-DS/
         Train/
             STAT/
-            hrconvnet/
-            alizadeh/
-            vitanet/
-            mmformer/
+            HRConvNet/
+            Alizadeh/
+            VitaNet/
+            mmFormer/
         Test/
             STAT/
-            hrconvnet/
-            alizadeh/
-            vitanet/
-            mmformer/
+            HRConvNet/
+            Alizadeh/
+            VitaNet/
+            mmFormer/
 
 STAT uses .pt files.
 All other methods use HDF5 files.
@@ -64,10 +64,10 @@ STAT_SUFFIX = "session"
 
 # Other methods use their HDF5 files.
 HDF5_METHODS = {
-    "hrconvnet": "hrconvnet",
-    "alizadeh": "alizadeh",
-    "vitanet": "vitanet",
-    "mmformer": "mmformer",
+    "HRConvNet": "hrconvnet",
+    "Alizadeh": "alizadeh",
+    "VitaNet": "vitanet",
+    "mmFormer": "mmformer",
 }
 
 

@@ -15,8 +15,8 @@ This repository focuses on **non-contact heart-rate estimation from in-cabin rad
 - **STAT** - the proposed spectro-temporal method. It uses fixed chest-region radar channels, spectral features, frequency- and temporal-axis Transformer processing, and a learned spectral attenuation mask. BioHarness-derived heart rate is used as the training reference, not as a model input.
 - **VitaNet** - an ICR-DS adaptation inspired by the published VitaNet approach, using radar phase-derived respiratory and cardiac bands to estimate scalar heart rate.
 - **mmFormer** - an ICR-DS adaptation using complex radar I/Q windows from four receivers and four selected range bins to estimate scalar heart rate.
-- **HeartTimeMixer** - an ICR-DS adaptation that uses the full 13-range-bin I/Q archive produced by the mmFormer radar generator. It does **not** require a separate HeartTimeMixer data export.
-- **HRConvNet** - an ICR-DS adaptation using EWT-inspired time/frequency radar features.
+- **HeartTimeMixer** - an ICR-DS adaptation using Variational Mode Decomposition (VMD)-based decomposition and temporal/frequency feature fusion to estimate scalar heart rate.
+- **HRConvNet** - an ICR-DS adaptation using empirical wavelet transform (EWT)-inspired time/frequency radar features.
 - **Alizadeh FFT** - a classical FFT-based heart-rate estimation baseline. The included script evaluates the precomputed Alizadeh estimates; it is not a neural-network training script.
 
 The implementations are research adaptations for ICR-DS, not necessarily exact reproductions of the original studies or official code released by their authors. The assumptions and differences are documented in the relevant source-file docstrings.
@@ -114,7 +114,7 @@ The exact PyTorch and CUDA versions have not been pinned in this repository. For
 Clone the repository and enter its directory:
 
 ```bash
-git clone <YOUR-GITHUB-REPOSITORY-URL>
+git clone https://github.com/Anima-Rahman/ICR-DS-Research.git
 cd ICR-DS-Research
 ```
 
@@ -208,16 +208,6 @@ python scripts/organise_icrds_splits.py
 ```
 
 The script copies the prepared STAT `.pt` files and baseline HDF5 files into subject-level `Train/` and `Test/` directories. It does not move or delete the source files and does not overwrite existing destination files. If you have already downloaded the prepared `Train/` and `Test/` structure from Hugging Face, you do not need to run this organiser.
-
-**Important before running:** the current `HDF5_METHODS` mapping in `organise_icrds_splits.py` uses lowercase destination folder names, whereas the training scripts expect `VitaNet`, `mmFormer`, and `HRConvNet` with the capitalisation shown above. Update the mapping keys to the expected folder names before running the organiser:
-
-```python
-HDF5_METHODS = {
-    "HRConvNet": "hrconvnet",
-    "Alizadeh": "alizadeh",
-    "VitaNet": "vitanet",
-    "mmFormer": "mmformer",
-}
 ```
 
 ## Running the methods
@@ -276,22 +266,18 @@ This script evaluates the precomputed Alizadeh estimates on the `Test/Alizadeh/`
 
 ## Experimental windows and representations
 
-The main radar analysis window used by the supplied ICR-DS processing and model scripts is 36 seconds (400 frames at a 0.09-second frame period), with an 18-second hop (50% overlap).
+All methods use temporally aligned 36-second radar analysis windows (400 frames at a 0.09-second frame period), with an 18-second hop (50% overlap). Although the temporal framing is consistent across methods, their radar representations and input features differ. Here, HR denotes heart rate.
 
-| Method | Prepared representation | Window configuration |
-|---|---|---|
-| STAT | 15 complex radar channels converted to full-window phase spectra; `.pt` files contain `x` and aligned `y` | 36 s, 18 s hop |
-| VitaNet | Phase-derived breathing and cardiac bands across 12 antenna channels and 13 range bins | 36 s, 18 s hop |
-| mmFormer | Complex I/Q from four receivers and four selected range bins | 36 s, 18 s hop |
-| HeartTimeMixer | Full complex I/Q archive across four receivers and 13 range bins from the mmFormer-style export | 36 s, 18 s hop |
-| HRConvNet | EWT-inspired time/frequency representation with shape `[2, 8, 400]` | 36 s, 18 s hop |
-| Alizadeh FFT | Range-selected slow-time I/Q, phase and FFT-derived heart-rate estimates | 36 s, 18 s hop |
+| **Method** | **Radar representation and prepared input** |
+|---|---|
+| **STAT** | Fifteen selected radar channels (3 azimuth × 5 Doppler cells) converted into full-window phase-derived log-power spectra. The `.pt` files contain `x` with shape `[N, 15, 1438]` and aligned scalar HR targets `y` with shape `[N]`. During training, the spectral representation is interpolated onto the 136-bin HR grid (45–180 bpm). |
+| **VitaNet** | Two phase-derived physiological bands (respiratory and cardiac) across 12 antenna channels and 13 range bins. The prepared model input has shape `[N, 400, 12, 13, 2]`. |
+| **mmFormer** | Complex in-phase/quadrature (I/Q) radar data from four receivers and four selected range bins, represented as real and imaginary components. The model input has shape `[N, 4, 2, 4, 400]`. |
+| **HeartTimeMixer** | Complex in-phase/quadrature (I/Q) data from the full 13-range-bin archive across four receivers. The pipeline selects a receiver and range bin, applies causal moving-target indication (MTI) filtering and Extended Differentiation and Cross-Multiplication (EDACM)-based phase extraction, followed by seven-mode Variational Mode Decomposition (VMD), producing temporal and frequency-domain features. |
+| **HRConvNet** | Empirical Wavelet Transform (EWT)-inspired decomposition of a range-selected radar phase signal into eight modes. The prepared representation has shape `[N, 2, 8, 400]`, combining time-domain modes and their fast Fourier transform (FFT)-magnitude representations. |
+| **Alizadeh FFT** | Range-candidate slow-time I/Q signals, followed by IQ-circle correction, phase extraction and vibration-spectrum analysis. Heart rate is estimated using FFT peak selection within the cardiac frequency band and three-bin log-Gaussian interpolation. |
 
-The STAT `.pt` input described in the training script has `x` with shape `[N, 15, 1438]` and `y` with shape `[N]`. STAT interpolates the spectral representation to its 136-bin heart-rate grid during training.
-
-## Outputs
-
-Training and evaluation scripts create model checkpoints, metrics, or prediction files in their configured output directories. These generated artefacts are not required to download the source code and should not be committed to the Git repository unless there is a specific reason to share them. The `.gitignore` file excludes common dataset files, checkpoints, temporary files and experiment outputs.
+Here, `N` denotes the number of analysis windows. Alizadeh FFT is a classical signal-processing baseline rather than a neural-network input pipeline.
 
 ## Citation
 
