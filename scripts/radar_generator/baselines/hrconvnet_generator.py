@@ -24,10 +24,6 @@ Processing summary:
 This is a documented ICR-DS adaptation of the processing stages in Zhao & Tong,
 Measurement (2025), not an exact reproduction. The one-chirp selection, EWT
 implementation, range-bin choices and 36-second input are implementation choices.
-The assumed 3-TX/4-RX/255-loop/96-ADC layout, TDM chirp order and 0.09-second
-frame period should be checked against the radar configuration. Alignment is
-inferred from the completed session HDF5 and raw frame counts, not independently
-verified against the synchronisation source.
 
 Dependencies: numpy, scipy, h5py.
 """

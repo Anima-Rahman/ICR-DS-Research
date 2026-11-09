@@ -24,9 +24,6 @@ Processing summary:
 
 This is an ICR-DS adaptation of Alizadeh et al. (IEEE Access, 2019),
 not an exact reproduction of their radar acquisition or recording protocol.
-The fixed chirp mapping and 0.09-second frame period should be checked against
-radar configuration/packet information. Alignment is inferred from the
-completed session HDF5 and raw frame counts; raw ADC files carry no UTC clock.
 
 The output stores per-window range I/Q, corrected/uncorrected phase, range
 selection, circle-fit diagnostics, spectra, heart-rate estimates and timing.

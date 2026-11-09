@@ -25,11 +25,6 @@ Butterworth filters. The published VitaNet used 6.4-second, 128-sample inputs
 at 20 Hz and 64 range bins. Here, the model input is 36 seconds at native
 radar rate, without temporal resampling.
 
-The decoder assumes 3 TX, 4 RX, 96 ADC samples, 255 loops per TX and
-TX-interleaved chirps (tx + 3*loop). It also assumes a 0.09-second frame
-period and concatenated raw files without recording-time gaps. Check these
-assumptions against the radar configuration and acquisition format.
-
 Before running, set DATA_ROOT below to the directory containing sub-XXX
 folders. The script processes all discovered subjects and never overwrites
 an existing sXXX_vitanet.h5 file.

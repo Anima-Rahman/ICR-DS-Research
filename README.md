@@ -197,8 +197,6 @@ python scripts/radar_generator/baselines/mmformer_generator.py
 
 The STAT preprocessing script creates model-ready `.pt` files from the session HDF5 radar branches. The baseline generators create their corresponding method-specific HDF5 files. The mmFormer generator also stores the full 13-range-bin I/Q archive used by HeartTimeMixer.
 
-The raw-ADC generators make assumptions about the radar acquisition layout and timing. These assumptions are described in their docstrings and should be checked against the acquisition configuration before processing new recordings. The generated baseline representations are ICR-DS adaptations of the referenced methods.
-
 ### Organising the subject-level Train/Test directories
 
 If your files are arranged under `sub-XXX/processed/`, edit `DATA_ROOT` in `scripts/organise_icrds_splits.py` and run:
