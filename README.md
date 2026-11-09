@@ -14,7 +14,7 @@ This repository focuses on **non-contact heart-rate estimation from in-cabin rad
 
 - **STAT** - the proposed spectro-temporal method. It uses fixed chest-region radar channels, spectral features, frequency- and temporal-axis Transformer processing, and a learned spectral attenuation mask. BioHarness-derived heart rate is used as the training reference, not as a model input.
 - **VitaNet** - an ICR-DS adaptation inspired by the published VitaNet approach, using radar phase-derived respiratory and cardiac bands to estimate scalar heart rate.
-- **mmFormer** - an ICR-DS adaptation using complex radar in-phase/quadrature (I/Q) windows from four receivers and four selected range bins to estimate scalar heart rate.
+- **mmFormer** - an ICR-DS adaptation using complex radar in-phase/quadrature (I/Q) windows from 4 receivers and 4 selected range bins to estimate scalar heart rate.
 - **HeartTimeMixer** - an ICR-DS adaptation using Variational Mode Decomposition (VMD)-based decomposition and temporal/frequency feature fusion to estimate scalar heart rate.
 - **HRConvNet** - an ICR-DS adaptation using empirical wavelet transform (EWT)-inspired time/frequency radar features.
 - **Alizadeh FFT** - a classical fast Fourier transform (FFT)-based heart-rate estimation baseline. The included script evaluates the precomputed Alizadeh estimates; it is not a neural-network training script.
@@ -265,15 +265,15 @@ This script evaluates the precomputed Alizadeh estimates on the `Test/Alizadeh/`
 
 ## Experimental windows and representations
 
-All methods use temporally aligned 36-second radar analysis windows (400 frames at a 0.09-second frame period), with an 18-second hop (50% overlap). Although the temporal framing is consistent across methods, their radar representations and input features differ. Here, HR denotes heart rate.
+All methods use temporally aligned 36-second radar analysis windows (400 frames at a 0.09-second frame period), with an 18-second hop (50% overlap). Although the temporal framing is consistent across methods, their radar representations and input features differ.
 
 | **Method** | **Radar representation and prepared input** |
 |---|---|
-| **STAT** | Fifteen selected radar channels (3 azimuth × 5 Doppler cells) converted into full-window phase-derived log-power spectra. The `.pt` files contain `x` with shape `[N, 15, 1438]` and aligned scalar HR targets `y` with shape `[N]`. During training, the spectral representation is interpolated onto the 136-bin HR grid (45–180 bpm). |
-| **VitaNet** | Two phase-derived physiological bands (respiratory and cardiac) across 12 antenna channels and 13 range bins. The prepared model input has shape `[N, 400, 12, 13, 2]`. |
-| **mmFormer** | Complex I/Q radar data from four receivers and four selected range bins, represented as real and imaginary components. The model input has shape `[N, 4, 2, 4, 400]`. |
-| **HeartTimeMixer** | Complex I/Q data from the full 13-range-bin archive across four receivers. The pipeline selects a receiver and range bin, applies causal moving-target indication (MTI) filtering and Extended Differentiation and Cross-Multiplication (EDACM)-based phase extraction, followed by seven-mode VMD, producing temporal and frequency-domain features. |
-| **HRConvNet** | EWT-inspired decomposition of a range-selected radar phase signal into eight modes. The prepared representation has shape `[N, 2, 8, 400]`, combining time-domain modes and their FFT-magnitude representations. |
+| **STAT** | 15 selected radar channels (3 azimuth × 5 Doppler cells) converted into full-window phase-derived log-power spectra. The `.pt` files contain `x` with shape `[N, 15, 1438]` and aligned scalar heart rate targets `y` with shape `[N]`. During training, the spectral representation is interpolated onto the 136-bin HR grid (45–180 bpm). |
+| **VitaNet** | 2 phase-derived physiological bands (respiratory and cardiac) across 12 antenna channels and 13 range bins. The prepared model input has shape `[N, 400, 12, 13, 2]`. |
+| **mmFormer** | Complex I/Q radar data from 4 receivers and 4 selected range bins, represented as real and imaginary components. The model input has shape `[N, 4, 2, 4, 400]`. |
+| **HeartTimeMixer** | Complex I/Q data from the full 13-range-bin archive across 4 receivers. The pipeline selects a receiver and range bin, applies causal moving-target indication (MTI) filtering and Extended Differentiation and Cross-Multiplication (EDACM)-based phase extraction, followed by seven-mode VMD, producing temporal and frequency-domain features. |
+| **HRConvNet** | EWT-inspired decomposition of a range-selected radar phase signal into 8 modes. The prepared representation has shape `[N, 2, 8, 400]`, combining time-domain modes and their FFT-magnitude representations. |
 | **Alizadeh FFT** | Range-candidate slow-time I/Q signals, followed by IQ-circle correction, phase extraction and vibration-spectrum analysis. Heart rate is estimated using FFT peak selection within the cardiac frequency band and three-bin log-Gaussian interpolation. |
 
 Here, `N` denotes the number of analysis windows. Alizadeh FFT is a classical signal-processing baseline rather than a neural-network input pipeline.
