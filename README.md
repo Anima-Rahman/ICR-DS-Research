@@ -267,7 +267,7 @@ All methods use temporally aligned 36-second radar analysis windows (400 frames 
 
 | **Method** | **Radar representation and prepared input** |
 |---|---|
-| **STAT** | 15 selected radar channels (3 azimuth × 5 Doppler cells) converted into full-window phase-derived log-power spectra. The `.pt` files contain `x` with shape `[N, 15, 1438]` and aligned scalar heart rate targets `y` with shape `[N]`. During training, the spectral representation is interpolated onto the 136-bin HR grid (45–180 bpm). |
+| **STAT** | 15 selected radar channels (3 azimuth × 5 Doppler cells) converted into full-window phase-derived log-power spectra. The `.pt` files contain `x` with shape `[N, 15, 1438]` and aligned scalar heart-rate targets `y` with shape `[N]`. During training, the spectral representation is interpolated onto the 136-bin heart-rate grid (45–180 bpm). |
 | **VitaNet** | 2 phase-derived physiological bands (respiratory and cardiac) across 12 antenna channels and 13 range bins. The prepared model input has shape `[N, 400, 12, 13, 2]`. |
 | **mmFormer** | Complex I/Q radar data from 4 receivers and 4 selected range bins, represented as real and imaginary components. The model input has shape `[N, 4, 2, 4, 400]`. |
 | **HeartTimeMixer** | Complex I/Q data from the full 13-range-bin archive across 4 receivers. The pipeline selects a receiver and range bin, applies causal moving-target indication (MTI) filtering and Extended Differentiation and Cross-Multiplication (EDACM)-based phase extraction, followed by seven-mode VMD, producing temporal and frequency-domain features. |

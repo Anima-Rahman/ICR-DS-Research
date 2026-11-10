@@ -328,8 +328,9 @@ def read_recording(path: Path, cfg: FeatureConfig, session_root: Path | None):
             raise ValueError(f'Range bin {cfg.range_bin} not in {range_bins.tolist()}')
         idx = int(matches[0])
     else:
-        # Radar-only: use the first 200 frames (18 s) to select one range bin
-        # for the entire recording; no BioHarness reference used in selection.
+        # Radar-only: use the first 36-second window, excluding the
+        # initial MTI warm-up, to select one range bin for the entire
+        # recording. No physiological reference is used in selection.
         warmup = min(cfg.mti_frames, TIME_SAMPLES//2)
         power = np.mean(np.abs(filtered[warmup:TIME_SAMPLES])**2, axis=0)
         idx = int(np.argmax(power))
@@ -454,8 +455,10 @@ class MixingBranch(nn.Module):
         seasonal = []
         trend = []
         for x in h:
-            # Fig. 6 lists k=25,51 at 30Hz; preserve their *time spans*
-            # with k=9,19 at this dataset's 11.11Hz, averaging two estimates.
+            # Fig. 6 specifies MovingAvg with kernel size 25 and stride 1
+            # at 30 Hz. The temporal kernel is adapted to 9 samples at
+            # the dataset's 11.11 Hz sampling rate, approximately preserving
+            # the original temporal span. Stride remains 1.
             tr = sum(moving_average(x, k) for k in self.kernels)/len(self.kernels)
             seasonal.append(x-tr)
             trend.append(tr)
@@ -479,7 +482,7 @@ class MixingBranch(nn.Module):
 
 class HeartTimeMixer(nn.Module):
     def __init__(self, time_length=400, frequency_length=100, width=48,
-                 scales=4, dropout=0.2, kernels=(9, 19)):
+                 scales=4, dropout=0.2, kernels=(9,)):
         super().__init__()
         if scales < 2:
             raise ValueError('Need >=2 scales for decomposable mixing')

@@ -146,8 +146,7 @@ def process_radar(h5_path, bin_folder):
             # angle_* shape: (F, D, 4, A, R)
             #
             # Use the same fixed, complete horizontal AoP row in both branches.
-            # Row 3 maps to virtual channels [10, 8, 6, 4].  There is no dynamic
-            # row switching or strongest-row phase alignment.
+            # Row 3 maps to virtual channels [10, 8, 6, 4].
             phase_row = angle_phase[:, :, AZIMUTH_ROW, :, :]
             localization_row = angle_localization[:, :, AZIMUTH_ROW, :, :]
 

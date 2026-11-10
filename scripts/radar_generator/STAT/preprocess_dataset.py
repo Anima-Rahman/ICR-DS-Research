@@ -32,7 +32,7 @@ WINDOW_SECONDS = WINDOW_FRAMES * FRAME_PERIOD_S
 LEGACY_SOURCE_WINDOW_FRAMES = 200
 
 # --------------------------------------------------
-# Fixed radar neighbourhood used for the spectrogram
+# Fixed radar neighbourhood used for the phase spectrum
 # --------------------------------------------------
 NUM_ANGLES = 3
 NUM_DOPPLERS = 5
@@ -65,7 +65,6 @@ SPECTRUM_EPS = 1e-12
 #
 #     HR_bpm = beat_count * 60 / WINDOW_SECONDS
 #
-# No Gaussian beat surrogate and no Gaussian frequency target are created.
 # With a 36 s window, one beat corresponds to 60/36 = 1.6667 bpm.
 HR_FMIN_BPM = 36.0
 HR_FMAX_BPM = 210.0
@@ -86,7 +85,7 @@ def phase_spectrum(complex_series, fs=FS):
         complex -> phase -> unwrap -> linear detrend -> 400-sample Hann
         -> 4096-point one-sided FFT -> power -> log10 power -> 0.1..4 Hz crop
 
-    No cardiac bandpass and no per-channel z-scoring are applied.
+    No cardiac bandpass is applied.
     """
     complex_series = np.asarray(complex_series)
 
@@ -243,7 +242,7 @@ def process_recording(h5_path):
         beat_times_s = np.sort(beat_times_s)
 
         # Keep the old script's interpretation explicit: ibi_ts must be beat
-        # timestamps in seconds relative to recording start, not RR durations.
+        # timestamps in seconds relative to recording start.
         if beat_times_s.size and beat_times_s[0] < 0:
             raise ValueError(f"{h5_path}: ibi_ts contains negative timestamps.")
 

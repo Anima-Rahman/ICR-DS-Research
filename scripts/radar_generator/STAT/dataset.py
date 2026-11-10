@@ -22,7 +22,7 @@ MAX_VALID_RANGE_BIN = 15
 # generator preserves a slightly wider 9-bin neighbourhood for flexibility.
 LOCALIZATION_DOPPLERS = 5
 
-# Default neighbourhood returned for the spectrogram pipeline.
+# Default radar neighbourhood used for downstream phase-spectrum extraction.
 # These are fixed channels for the whole 400-frame / 36 s analysis window; nothing hops.
 SPECTROGRAM_ANGLES = 3
 SPECTROGRAM_DOPPLERS = 5
@@ -227,7 +227,9 @@ def extract_fixed_complex_roi(
     dict
         ``series`` has shape (num_angles, num_dopplers, 400), complex64.
         Every channel uses the same range, angle and Doppler index for the
-        complete 400-frame window.  Phase unwrapping/STFT happens downstream.
+        complete 400-frame window.
+        Phase extraction, unwrapping, linear detrending, Hann windowing,
+        and FFT-based spectral analysis are performed downstream.
     """
     complex_cube = _complex_cube(radar_window)
     F, D, R, A = complex_cube.shape

@@ -1,11 +1,19 @@
 #!/usr/bin/env python3
 """STAT: Spectro-temporal Axial Transformer for in-vehicle radar heart rate estimation.
 
-Training implementation of the proposed STAT method on ICR-DS. The model
-processes 36-s FMCW radar windows with an 18-s hop, represented by 15 radar
-cells and 136 heart-rate frequency bins (45–180 bpm). A radar-only, local
-three-window 75th-percentile background estimate is applied before neural
-enhancement, using 0.18-Hz Gaussian smoothing and strength 0.90.
+Training implementation of the proposed STAT method on ICR-DS.
+
+The model processes 36-s FMCW radar windows with an 18-s hop,
+represented by 15 radar cells and 136 heart-rate frequency bins
+(45–180 bpm).
+
+Before neural enhancement, a local spectral reference is estimated
+directly from the original normalised log-power spectra using the
+75th percentile across a three-window temporal neighbourhood.
+The reference is Gaussian-smoothed along frequency (0.18-Hz
+standard deviation), interpolated onto the HR grid, and scaled
+by a correction strength of 0.90 before being subtracted from
+the current spectrum.
 
 STAT uses two factorised axial Transformer blocks, applying multi-head
 self-attention first along the frequency axis and then along the temporal
@@ -23,7 +31,7 @@ supervision and are not used as network inputs.
 
 Expected input: one {TRAIN_PT_DIR}/sXXX_session.pt file per participant.
 Each file contains:
-    x: normalized full radar spectra, float array [N, 15, 1438]
+    x: normalised full radar spectra, float array [N, 15, 1438]
     y: aligned BioHarness reference heart rate, float array [N]
 The spectra must use the STAT FFT frequency grid and 36-s windows with an
 18-s hop.
